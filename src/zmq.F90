@@ -1,4 +1,4 @@
-! zmq.f90
+! zmq.F90
 !
 ! Author:  Philipp Engel
 ! Licence: ISC
@@ -360,10 +360,8 @@ module zmq
     public :: zmq_connect_peer_
     public :: zmq_ctx_destroy
     public :: zmq_ctx_get
-    public :: zmq_ctx_get_ext
     public :: zmq_ctx_new
     public :: zmq_ctx_set
-    public :: zmq_ctx_set_ext
     public :: zmq_ctx_shutdown
     public :: zmq_ctx_term
     public :: zmq_curve_keypair
@@ -378,18 +376,12 @@ module zmq
     public :: zmq_has
     public :: zmq_has_
     public :: zmq_init
-    public :: zmq_join
-    public :: zmq_join_
-    public :: zmq_leave
-    public :: zmq_leave_
     public :: zmq_msg_close
     public :: zmq_msg_copy
     public :: zmq_msg_data
     public :: zmq_msg_get
     public :: zmq_msg_gets
     public :: zmq_msg_gets_
-    public :: zmq_msg_group
-    public :: zmq_msg_group_
     public :: zmq_msg_init
     public :: zmq_msg_init_buffer
     public :: zmq_msg_init_data
@@ -402,23 +394,8 @@ module zmq
     public :: zmq_msg_routing_id
     public :: zmq_msg_send
     public :: zmq_msg_set
-    public :: zmq_msg_set_group
-    public :: zmq_msg_set_group_
-    public :: zmq_msg_set_routing_id
     public :: zmq_msg_size
     public :: zmq_poll
-    public :: zmq_poller_add
-    public :: zmq_poller_add_fd
-    public :: zmq_poller_destroy
-    public :: zmq_poller_fd
-    public :: zmq_poller_modify
-    public :: zmq_poller_modify_fd
-    public :: zmq_poller_new
-    public :: zmq_poller_remove
-    public :: zmq_poller_remove_fd
-    public :: zmq_poller_size
-    public :: zmq_poller_wait
-    public :: zmq_poller_wait_all
     public :: zmq_ppoll
     public :: zmq_proxy
     public :: zmq_proxy_steerable
@@ -461,6 +438,35 @@ module zmq
     public :: zmq_z85_decode_
     public :: zmq_z85_encode
     public :: zmq_z85_encode_
+
+#if HAS_DRAFT
+    public :: zmq_ctx_get_ext
+    public :: zmq_ctx_set_ext
+    public :: zmq_join
+    public :: zmq_join_
+    public :: zmq_leave
+    public :: zmq_leave_
+    public :: zmq_msg_group
+    public :: zmq_msg_group_
+    public :: zmq_msg_set_group
+    public :: zmq_msg_set_group_
+    public :: zmq_msg_set_routing_id
+#endif
+
+#if HAS_POLLER
+    public :: zmq_poller_add
+    public :: zmq_poller_add_fd
+    public :: zmq_poller_destroy
+    public :: zmq_poller_fd
+    public :: zmq_poller_modify
+    public :: zmq_poller_modify_fd
+    public :: zmq_poller_new
+    public :: zmq_poller_remove
+    public :: zmq_poller_remove_fd
+    public :: zmq_poller_size
+    public :: zmq_poller_wait
+    public :: zmq_poller_wait_all
+#endif
 
     interface
         ! int zmq_atomic_counter_dec(void *counter)
@@ -561,17 +567,6 @@ module zmq
             integer(c_int)                    :: zmq_ctx_get
         end function zmq_ctx_get
 
-        ! int zmq_ctx_get_ext(void *context, int option, void *optval, size_t *optval_len)
-        function zmq_ctx_get_ext(context, option, optval, optval_len) bind(c, name='zmq_ctx_get_ext')
-            import :: c_int, c_ptr, c_size_t
-            implicit none
-            type(c_ptr),       intent(in), value :: context
-            integer(c_int),    intent(in), value :: option
-            type(c_ptr),       intent(in), value :: optval
-            integer(c_size_t), intent(out)       :: optval_len
-            integer(c_int)                       :: zmq_ctx_get_ext
-        end function zmq_ctx_get_ext
-
         ! void *zmq_ctx_new(void)
         function zmq_ctx_new() bind(c, name='zmq_ctx_new')
             import :: c_ptr
@@ -588,17 +583,6 @@ module zmq
             integer(c_int), intent(in), value :: optval
             integer(c_int)                    :: zmq_ctx_set
         end function zmq_ctx_set
-
-        ! int zmq_ctx_set_ext(void *context, int option, const void *optval, size_t optval_len)
-        function zmq_ctx_set_ext(context, option, optval, optval_len) bind(c, name='zmq_ctx_set_ext')
-            import :: c_int, c_ptr, c_size_t
-            implicit none
-            type(c_ptr),       intent(in), value :: context
-            integer(c_int),    intent(in), value :: option
-            type(c_ptr),       intent(in), value :: optval
-            integer(c_size_t), intent(in), value :: optval_len
-            integer(c_int)                       :: zmq_ctx_set_ext
-        end function zmq_ctx_set_ext
 
         ! int zmq_ctx_shutdown(void *context)
         function zmq_ctx_shutdown(context) bind(c, name='zmq_ctx_shutdown')
@@ -687,24 +671,6 @@ module zmq
             type(c_ptr)                       :: zmq_init
         end function zmq_init
 
-        ! int zmq_join(void *s, const char *group)
-        function zmq_join_(s, group) bind(c, name='zmq_join')
-            import :: c_char, c_int, c_ptr
-            implicit none
-            type(c_ptr),       intent(in), value :: s
-            character(c_char), intent(in)        :: group
-            integer(c_int)                       :: zmq_join_
-        end function zmq_join_
-
-        ! int zmq_leave(void *s, const char *group)
-        function zmq_leave_(s, group) bind(c, name='zmq_leave')
-            import :: c_char, c_int, c_ptr
-            implicit none
-            type(c_ptr),       intent(in), value :: s
-            character(c_char), intent(in)        :: group
-            integer(c_int)                       :: zmq_leave_
-        end function zmq_leave_
-
         ! int zmq_msg_close(zmq_msg_t *msg)
         function zmq_msg_close(msg) bind(c, name='zmq_msg_close')
             import :: c_int, zmq_msg_t
@@ -747,14 +713,6 @@ module zmq
             character(c_char), intent(in)    :: property
             type(c_ptr)                      :: zmq_msg_gets_
         end function zmq_msg_gets_
-
-        ! const char *zmq_msg_group(zmq_msg_t *msg)
-        function zmq_msg_group_(msg) bind(c, name='zmq_msg_group')
-            import :: c_ptr, zmq_msg_t
-            implicit none
-            type(zmq_msg_t), intent(inout) :: msg
-            type(c_ptr)                    :: zmq_msg_group_
-        end function zmq_msg_group_
 
         ! int zmq_msg_init(zmq_msg_t *msg)
         function zmq_msg_init(msg) bind(c, name='zmq_msg_init')
@@ -850,24 +808,6 @@ module zmq
             integer(c_int)                     :: zmq_msg_set
         end function zmq_msg_set
 
-        ! int zmq_msg_set_group(zmq_msg_t *msg, const char *group)
-        function zmq_msg_set_group_(msg, group) bind(c, name='zmq_msg_set_group')
-            import :: c_char, c_int, zmq_msg_t
-            implicit none
-            type(zmq_msg_t),   intent(inout) :: msg
-            character(c_char), intent(in)    :: group
-            integer(c_int)                   :: zmq_msg_set_group_
-        end function zmq_msg_set_group_
-
-        ! int zmq_msg_set_routing_id(zmq_msg_t *msg, uint32_t routing_id)
-        function zmq_msg_set_routing_id(msg, routing_id) bind(c, name='zmq_msg_set_routing_id')
-            import :: c_int, c_uint32_t, zmq_msg_t
-            implicit none
-            type(zmq_msg_t),     intent(inout)     :: msg
-            integer(c_uint32_t), intent(in), value :: routing_id
-            integer(c_int)                         :: zmq_msg_set_routing_id
-        end function zmq_msg_set_routing_id
-
         ! size_t zmq_msg_size(const zmq_msg_t *msg)
         function zmq_msg_size(msg) bind(c, name='zmq_msg_size')
             import :: c_size_t, zmq_msg_t
@@ -885,119 +825,6 @@ module zmq
             integer(c_long),      intent(in), value :: timeout
             integer(c_int)                          :: zmq_poll
         end function zmq_poll
-
-        ! int zmq_poller_add(void *poller, void *socket, void *user_data, short events)
-        function zmq_poller_add(poller, socket, user_data, events) bind(c, name='zmq_poller_add')
-            import :: c_int, c_ptr, c_short
-            implicit none
-            type(c_ptr),      intent(in), value :: poller
-            type(c_ptr),      intent(in), value :: socket
-            type(c_ptr),      intent(in), value :: user_data
-            integer(c_short), intent(in), value :: events
-            integer(c_int)                      :: zmq_poller_add
-        end function zmq_poller_add
-
-        ! int zmq_poller_add_fd(void *poller, zmq_fd_t fd, void *user_data, short events)
-        function zmq_poller_add_fd(poller, fd, user_data, events) bind(c, name='zmq_poller_add_fd')
-            import :: c_int, c_ptr, c_short
-            implicit none
-            type(c_ptr),      intent(in), value :: poller
-            integer(c_int),   intent(in), value :: fd
-            type(c_ptr),      intent(in), value :: user_data
-            integer(c_short), intent(in), value :: events
-            integer(c_int)                      :: zmq_poller_add_fd
-        end function zmq_poller_add_fd
-
-        ! int zmq_poller_destroy(void **poller_p)
-        function zmq_poller_destroy(poller_p) bind(c, name='zmq_poller_destroy')
-            import :: c_int, c_ptr
-            implicit none
-            type(c_ptr), intent(out) :: poller_p
-            integer(c_int)           :: zmq_poller_destroy
-        end function zmq_poller_destroy
-
-        ! int zmq_poller_fd(void *poller, zmq_fd_t *fd)
-        function zmq_poller_fd(poller, fd) bind(c, name='zmq_poller_fd')
-            import :: c_int, c_ptr, zmq_fd_t
-            implicit none
-            type(c_ptr),       intent(in), value :: poller
-            integer(zmq_fd_t), intent(out)       :: fd
-            integer(c_int)                       :: zmq_poller_fd
-        end function zmq_poller_fd
-
-        ! int zmq_poller_modify(void *poller, void *socket, short events)
-        function zmq_poller_modify(poller, socket, events) bind(c, name='zmq_poller_modify')
-            import :: c_int, c_ptr, c_short
-            implicit none
-            type(c_ptr),      intent(in), value :: poller
-            type(c_ptr),      intent(in), value :: socket
-            integer(c_short), intent(in), value :: events
-            integer(c_int)                      :: zmq_poller_modify
-        end function zmq_poller_modify
-
-        ! int zmq_poller_modify_fd(void *poller, zmq_fd_t fd, short events)
-        function zmq_poller_modify_fd(poller, fd, events) bind(c, name='zmq_poller_modify_fd')
-            import :: c_int, c_ptr, c_short, zmq_fd_t
-            implicit none
-            type(c_ptr),       intent(in), value :: poller
-            integer(zmq_fd_t), intent(in), value :: fd
-            integer(c_short),  intent(in), value :: events
-            integer(c_int)                       :: zmq_poller_modify_fd
-        end function zmq_poller_modify_fd
-
-        ! void *zmq_poller_new(void)
-        function zmq_poller_new() bind(c, name='zmq_poller_new')
-            import :: c_ptr
-            implicit none
-            type(c_ptr) :: zmq_poller_new
-        end function zmq_poller_new
-
-        ! int zmq_poller_remove(void *poller, void *socket)
-        function zmq_poller_remove(poller, socket) bind(c, name='zmq_poller_remove')
-            import :: c_int, c_ptr
-            implicit none
-            type(c_ptr), intent(in), value :: poller
-            type(c_ptr), intent(in), value :: socket
-            integer(c_int)                 :: zmq_poller_remove
-        end function zmq_poller_remove
-
-        ! int zmq_poller_remove_fd(void *poller, zmq_fd_t fd)
-        function zmq_poller_remove_fd(poller, fd) bind(c, name='zmq_poller_remove_fd')
-            import :: c_int, c_ptr, zmq_fd_t
-            implicit none
-            type(c_ptr),       intent(in), value :: poller
-            integer(zmq_fd_t), intent(in), value :: fd
-            integer(c_int)                       :: zmq_poller_remove_fd
-        end function zmq_poller_remove_fd
-
-        ! int zmq_poller_size(void *poller)
-        function zmq_poller_size(poller) bind(c, name='zmq_poller_size')
-            import :: c_int, c_ptr
-            implicit none
-            type(c_ptr), intent(in), value :: poller
-            integer(c_int)                 :: zmq_poller_size
-        end function zmq_poller_size
-
-        ! int zmq_poller_wait(void *poller, zmq_poller_event_t *event, long timeout)
-        function zmq_poller_wait(poller, event, timeout) bind(c, name='zmq_poller_wait')
-            import :: c_int, c_long, c_ptr
-            implicit none
-            type(c_ptr),     intent(in), value :: poller
-            type(c_ptr),     intent(in), value :: event
-            integer(c_long), intent(in), value :: timeout
-            integer(c_int)                     :: zmq_poller_wait
-        end function zmq_poller_wait
-
-        ! int zmq_poller_wait_all(void *poller, zmq_poller_event_t *events, int n_events, long timeout)
-        function zmq_poller_wait_all(poller, events, n_events, timeout) bind(c, name='zmq_poller_wait_all')
-            import :: c_int, c_long, c_ptr
-            implicit none
-            type(c_ptr),     intent(in), value :: poller
-            type(c_ptr),     intent(in), value :: events
-            integer(c_int),  intent(in), value :: n_events
-            integer(c_long), intent(in), value :: timeout
-            integer(c_int)                     :: zmq_poller_wait_all
-        end function zmq_poller_wait_all
 
         ! int zmq_ppoll(zmq_pollitem_t *items, int nitems, long timeout, const void *sigmask)
         function zmq_ppoll(items, nitems, timeout, sigmask) bind(c, name='zmq_ppoll')
@@ -1335,6 +1162,193 @@ module zmq
             type(c_ptr)                           :: zmq_z85_encode_
         end function zmq_z85_encode_
     end interface
+
+#if HAS_DRAFT
+    interface
+        ! int zmq_ctx_get_ext(void *context, int option, void *optval, size_t *optval_len)
+        function zmq_ctx_get_ext(context, option, optval, optval_len) bind(c, name='zmq_ctx_get_ext')
+            import :: c_int, c_ptr, c_size_t
+            implicit none
+            type(c_ptr),       intent(in), value :: context
+            integer(c_int),    intent(in), value :: option
+            type(c_ptr),       intent(in), value :: optval
+            integer(c_size_t), intent(out)       :: optval_len
+            integer(c_int)                       :: zmq_ctx_get_ext
+        end function zmq_ctx_get_ext
+
+        ! int zmq_ctx_set_ext(void *context, int option, const void *optval, size_t optval_len)
+        function zmq_ctx_set_ext(context, option, optval, optval_len) bind(c, name='zmq_ctx_set_ext')
+            import :: c_int, c_ptr, c_size_t
+            implicit none
+            type(c_ptr),       intent(in), value :: context
+            integer(c_int),    intent(in), value :: option
+            type(c_ptr),       intent(in), value :: optval
+            integer(c_size_t), intent(in), value :: optval_len
+            integer(c_int)                       :: zmq_ctx_set_ext
+        end function zmq_ctx_set_ext
+
+        ! int zmq_join(void *s, const char *group)
+        function zmq_join_(s, group) bind(c, name='zmq_join')
+            import :: c_char, c_int, c_ptr
+            implicit none
+            type(c_ptr),       intent(in), value :: s
+            character(c_char), intent(in)        :: group
+            integer(c_int)                       :: zmq_join_
+        end function zmq_join_
+
+        ! int zmq_leave(void *s, const char *group)
+        function zmq_leave_(s, group) bind(c, name='zmq_leave')
+            import :: c_char, c_int, c_ptr
+            implicit none
+            type(c_ptr),       intent(in), value :: s
+            character(c_char), intent(in)        :: group
+            integer(c_int)                       :: zmq_leave_
+        end function zmq_leave_
+
+        ! const char *zmq_msg_group(zmq_msg_t *msg)
+        function zmq_msg_group_(msg) bind(c, name='zmq_msg_group')
+            import :: c_ptr, zmq_msg_t
+            implicit none
+            type(zmq_msg_t), intent(inout) :: msg
+            type(c_ptr)                    :: zmq_msg_group_
+        end function zmq_msg_group_
+
+        ! int zmq_msg_set_group(zmq_msg_t *msg, const char *group)
+        function zmq_msg_set_group_(msg, group) bind(c, name='zmq_msg_set_group')
+            import :: c_char, c_int, zmq_msg_t
+            implicit none
+            type(zmq_msg_t),   intent(inout) :: msg
+            character(c_char), intent(in)    :: group
+            integer(c_int)                   :: zmq_msg_set_group_
+        end function zmq_msg_set_group_
+
+        ! int zmq_msg_set_routing_id(zmq_msg_t *msg, uint32_t routing_id)
+        function zmq_msg_set_routing_id(msg, routing_id) bind(c, name='zmq_msg_set_routing_id')
+            import :: c_int, c_uint32_t, zmq_msg_t
+            implicit none
+            type(zmq_msg_t),     intent(inout)     :: msg
+            integer(c_uint32_t), intent(in), value :: routing_id
+            integer(c_int)                         :: zmq_msg_set_routing_id
+        end function zmq_msg_set_routing_id
+    end interface
+#endif
+
+#if HAS_POLLER
+    interface
+        ! int zmq_poller_add(void *poller, void *socket, void *user_data, short events)
+        function zmq_poller_add(poller, socket, user_data, events) bind(c, name='zmq_poller_add')
+            import :: c_int, c_ptr, c_short
+            implicit none
+            type(c_ptr),      intent(in), value :: poller
+            type(c_ptr),      intent(in), value :: socket
+            type(c_ptr),      intent(in), value :: user_data
+            integer(c_short), intent(in), value :: events
+            integer(c_int)                      :: zmq_poller_add
+        end function zmq_poller_add
+
+        ! int zmq_poller_add_fd(void *poller, zmq_fd_t fd, void *user_data, short events)
+        function zmq_poller_add_fd(poller, fd, user_data, events) bind(c, name='zmq_poller_add_fd')
+            import :: c_int, c_ptr, c_short
+            implicit none
+            type(c_ptr),      intent(in), value :: poller
+            integer(c_int),   intent(in), value :: fd
+            type(c_ptr),      intent(in), value :: user_data
+            integer(c_short), intent(in), value :: events
+            integer(c_int)                      :: zmq_poller_add_fd
+        end function zmq_poller_add_fd
+
+        ! int zmq_poller_destroy(void **poller_p)
+        function zmq_poller_destroy(poller_p) bind(c, name='zmq_poller_destroy')
+            import :: c_int, c_ptr
+            implicit none
+            type(c_ptr), intent(out) :: poller_p
+            integer(c_int)           :: zmq_poller_destroy
+        end function zmq_poller_destroy
+
+        ! int zmq_poller_fd(void *poller, zmq_fd_t *fd)
+        function zmq_poller_fd(poller, fd) bind(c, name='zmq_poller_fd')
+            import :: c_int, c_ptr, zmq_fd_t
+            implicit none
+            type(c_ptr),       intent(in), value :: poller
+            integer(zmq_fd_t), intent(out)       :: fd
+            integer(c_int)                       :: zmq_poller_fd
+        end function zmq_poller_fd
+
+        ! int zmq_poller_modify(void *poller, void *socket, short events)
+        function zmq_poller_modify(poller, socket, events) bind(c, name='zmq_poller_modify')
+            import :: c_int, c_ptr, c_short
+            implicit none
+            type(c_ptr),      intent(in), value :: poller
+            type(c_ptr),      intent(in), value :: socket
+            integer(c_short), intent(in), value :: events
+            integer(c_int)                      :: zmq_poller_modify
+        end function zmq_poller_modify
+
+        ! int zmq_poller_modify_fd(void *poller, zmq_fd_t fd, short events)
+        function zmq_poller_modify_fd(poller, fd, events) bind(c, name='zmq_poller_modify_fd')
+            import :: c_int, c_ptr, c_short, zmq_fd_t
+            implicit none
+            type(c_ptr),       intent(in), value :: poller
+            integer(zmq_fd_t), intent(in), value :: fd
+            integer(c_short),  intent(in), value :: events
+            integer(c_int)                       :: zmq_poller_modify_fd
+        end function zmq_poller_modify_fd
+
+        ! void *zmq_poller_new(void)
+        function zmq_poller_new() bind(c, name='zmq_poller_new')
+            import :: c_ptr
+            implicit none
+            type(c_ptr) :: zmq_poller_new
+        end function zmq_poller_new
+
+        ! int zmq_poller_remove(void *poller, void *socket)
+        function zmq_poller_remove(poller, socket) bind(c, name='zmq_poller_remove')
+            import :: c_int, c_ptr
+            implicit none
+            type(c_ptr), intent(in), value :: poller
+            type(c_ptr), intent(in), value :: socket
+            integer(c_int)                 :: zmq_poller_remove
+        end function zmq_poller_remove
+
+        ! int zmq_poller_remove_fd(void *poller, zmq_fd_t fd)
+        function zmq_poller_remove_fd(poller, fd) bind(c, name='zmq_poller_remove_fd')
+            import :: c_int, c_ptr, zmq_fd_t
+            implicit none
+            type(c_ptr),       intent(in), value :: poller
+            integer(zmq_fd_t), intent(in), value :: fd
+            integer(c_int)                       :: zmq_poller_remove_fd
+        end function zmq_poller_remove_fd
+
+        ! int zmq_poller_size(void *poller)
+        function zmq_poller_size(poller) bind(c, name='zmq_poller_size')
+            import :: c_int, c_ptr
+            implicit none
+            type(c_ptr), intent(in), value :: poller
+            integer(c_int)                 :: zmq_poller_size
+        end function zmq_poller_size
+
+        ! int zmq_poller_wait(void *poller, zmq_poller_event_t *event, long timeout)
+        function zmq_poller_wait(poller, event, timeout) bind(c, name='zmq_poller_wait')
+            import :: c_int, c_long, c_ptr
+            implicit none
+            type(c_ptr),     intent(in), value :: poller
+            type(c_ptr),     intent(in), value :: event
+            integer(c_long), intent(in), value :: timeout
+            integer(c_int)                     :: zmq_poller_wait
+        end function zmq_poller_wait
+
+        ! int zmq_poller_wait_all(void *poller, zmq_poller_event_t *events, int n_events, long timeout)
+        function zmq_poller_wait_all(poller, events, n_events, timeout) bind(c, name='zmq_poller_wait_all')
+            import :: c_int, c_long, c_ptr
+            implicit none
+            type(c_ptr),     intent(in), value :: poller
+            type(c_ptr),     intent(in), value :: events
+            integer(c_int),  intent(in), value :: n_events
+            integer(c_long), intent(in), value :: timeout
+            integer(c_int)                     :: zmq_poller_wait_all
+        end function zmq_poller_wait_all
+    end interface
+#endif
 contains
     ! int zmq_bind(void *s, const char *addr)
     integer function zmq_bind(s, addr) result(rc)
@@ -1399,22 +1413,6 @@ contains
         has = (zmq_has_(f_c_str(capability)) == 1)
     end function zmq_has
 
-    ! int zmq_join(void *s, const char *group)
-    integer function zmq_join(s, group) result(rc)
-        type(c_ptr),  intent(in) :: s
-        character(*), intent(in) :: group
-
-        rc = zmq_join_(s, f_c_str(group))
-    end function zmq_join
-
-    ! int zmq_leave(void *s, const char *group)
-    integer function zmq_leave(s, group) result(rc)
-        type(c_ptr),  intent(in) :: s
-        character(*), intent(in) :: group
-
-        rc = zmq_leave_(s, f_c_str(group))
-    end function zmq_leave
-
     ! const char *zmq_msg_gets(const zmq_msg_t *msg, const char *property)
     function zmq_msg_gets(msg, property) result(str)
         type(zmq_msg_t), intent(inout) :: msg
@@ -1426,17 +1424,6 @@ contains
         ptr = zmq_msg_gets_(msg, f_c_str(property))
         call c_f_str_ptr(ptr, str)
     end function zmq_msg_gets
-
-    ! const char *zmq_msg_group(zmq_msg_t *msg)
-    function zmq_msg_group(msg) result(str)
-        type(zmq_msg_t), intent(inout) :: msg
-        character(:), allocatable      :: str
-
-        type(c_ptr) :: ptr
-
-        ptr = zmq_msg_group_(msg)
-        call c_f_str_ptr(ptr, str)
-    end function zmq_msg_group
 
     ! int zmq_msg_init_data(zmq_msg_t *msg, void *data, size_t size, zmq_free_fn *ffn, void *hint)
     integer function zmq_msg_init_data(msg, data, size, ffn, hint) result(rc)
@@ -1470,14 +1457,6 @@ contains
 
         more = (zmq_msg_more_(msg) == 1)
     end function zmq_msg_more
-
-    ! int zmq_msg_set_group(zmq_msg_t *msg, const char *group)
-    integer function zmq_msg_set_group(msg, group) result(rc)
-        type(zmq_msg_t), intent(inout) :: msg
-        character(*),    intent(in)    :: group
-
-        rc = zmq_msg_set_group_(msg, f_c_str(group))
-    end function zmq_msg_set_group
 
     ! int zmq_socket_monitor(void *s, const char *addr, int events)
     integer function zmq_socket_monitor(s, addr, events) result(rc)
@@ -1549,4 +1528,41 @@ contains
 
         ptr = zmq_z85_encode_(c_loc(dest), data, size(data, kind=c_size_t))
     end subroutine zmq_z85_encode
+
+#if HAS_DRAFT
+    ! int zmq_join(void *s, const char *group)
+    integer function zmq_join(s, group) result(rc)
+        type(c_ptr),  intent(in) :: s
+        character(*), intent(in) :: group
+
+        rc = zmq_join_(s, f_c_str(group))
+    end function zmq_join
+
+    ! int zmq_leave(void *s, const char *group)
+    integer function zmq_leave(s, group) result(rc)
+        type(c_ptr),  intent(in) :: s
+        character(*), intent(in) :: group
+
+        rc = zmq_leave_(s, f_c_str(group))
+    end function zmq_leave
+
+    ! const char *zmq_msg_group(zmq_msg_t *msg)
+    function zmq_msg_group(msg) result(str)
+        type(zmq_msg_t), intent(inout) :: msg
+        character(:), allocatable      :: str
+
+        type(c_ptr) :: ptr
+
+        ptr = zmq_msg_group_(msg)
+        call c_f_str_ptr(ptr, str)
+    end function zmq_msg_group
+
+    ! int zmq_msg_set_group(zmq_msg_t *msg, const char *group)
+    integer function zmq_msg_set_group(msg, group) result(rc)
+        type(zmq_msg_t), intent(inout) :: msg
+        character(*),    intent(in)    :: group
+
+        rc = zmq_msg_set_group_(msg, f_c_str(group))
+    end function zmq_msg_set_group
+#endif
 end module zmq

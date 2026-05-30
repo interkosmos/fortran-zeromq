@@ -25,7 +25,7 @@ LIBFCZMQ = libfortran-czmq.a
 LIBFZMQ  = libfortran-zmq.a
 TARGET   = libfortran-zeromq.a
 
-SRC_ZMQ  = src/zmq.f90 \
+SRC_ZMQ  = src/zmq.F90 \
            src/zmq_util.F90
 SRC_CZMQ = src/czmq.f90 \
            src/czmq_macro.c \
@@ -117,8 +117,8 @@ czmq_zstr.o: src/czmq_zstr.f90
 zeromq.o: src/zeromq.f90
 	$(FC) $(FFLAGS) -c src/zeromq.f90
 
-zmq.o: src/zmq.f90
-	$(FC) $(FFLAGS) -c src/zmq.f90
+zmq.o: src/zmq.F90
+	$(FC) $(FFLAGS) -c src/zmq.F90
 
 zmq_util.o: src/zmq_util.F90
 	$(FC) $(FFLAGS) -c src/zmq_util.F90
