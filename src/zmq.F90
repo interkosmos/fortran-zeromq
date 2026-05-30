@@ -1349,6 +1349,7 @@ module zmq
         end function zmq_poller_wait_all
     end interface
 #endif
+
 contains
     ! int zmq_bind(void *s, const char *addr)
     integer function zmq_bind(s, addr) result(rc)

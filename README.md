@@ -56,6 +56,12 @@ Execute the Makefile to build all bindings (`libfortran-zeromq.a`):
 $ make
 ```
 
+Build with ZeroMQ draft and poller procedure bindings:
+
+```
+$ make FFLAGS="-O2 -DHAS_DRAFT -DHAS_POLLER"
+```
+
 Build only _libzmq_ bindings (`libfortran-zmq.a`):
 
 ```
@@ -68,14 +74,14 @@ Build only CZMQ bindings (`libfortran-czmq.a`):
 $ make czmq
 ```
 
-Install the library and the module files to `/opt`:
+Install the libraries and the module files to `/opt`:
 
 ```
 $ make install PREFIX=/opt
 ```
 
 Link your programs against `/opt/lib/libfortran-zeromq.a` and `-lzmq` (ZeroMQ)
-or `-lczmq` (CZMQ). Make sure to pass the path to the _fortran-zeromq_ module
+and `-lczmq` (CZMQ). Make sure to pass the path to the _fortran-zeromq_ module
 files, for instance, with argument `-I/opt/include/fortran-zeromq`.
 
 Examples are provided in directory `examples/`. Build them with:
@@ -134,7 +140,7 @@ end program main
 Build and run the client:
 
 ```
-$ gfortran -I/opt/include/fortran-zeromq -o client client.f90 /opt/lib/libfortran-zeromq.a -lczmq
+$ gfortran -I/opt/include/fortran-zeromq -o client client.f90 /opt/lib/libfortran-zeromq.a -lzmq -lczmq
 $ ./client
 ```
 
@@ -170,7 +176,7 @@ end program main
 Build and run the server:
 
 ```
-$ gfortran -I/opt/include/fortran-zeromq -o server server.f90 /opt/lib/libfortran-zeromq.a -lczmq
+$ gfortran -I/opt/include/fortran-zeromq -o server server.f90 /opt/lib/libfortran-zeromq.a -lzmq -lczmq
 $ ./server
 server waiting on port 5555 ...
 ```
@@ -186,7 +192,7 @@ $ make examples
 If ZeroMQ and CZMQ are installed to `/opt`, run instead:
 
 ```
-$ make examples PREFIX="/opt" LIBZMQ="-Wl,-rpath=/opt/lib -L/opt/lib -lzmq" LIBCZMQ="-Wl,-rpath=/opt/lib -L/opt/lib -lczmq"
+$ make examples LIBZMQ="-Wl,-rpath=/opt/lib -L/opt/lib -lzmq" LIBCZMQ="-Wl,-rpath=/opt/lib -L/opt/lib -lczmq"
 ```
 
 ## References
