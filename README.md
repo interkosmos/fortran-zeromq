@@ -1,5 +1,9 @@
 # fortran-zeromq
 
+![Language](https://img.shields.io/badge/-Fortran-734f96?logo=fortran&logoColor=white)
+![License](https://img.shields.io/github/license/interkosmos/fortran-zeromq?color=blue)
+![Build](https://img.shields.io/github/actions/workflow/status/interkosmos/fortran-zeromq/build.yml)
+
 A work-in-progress collection of Fortran 2018 ISO C binding interfaces to the
 ZeroMQ core library _libzmq_ (Version 4) and the high-level C binding CZMQ
 (Version 4). For Fortran 2003 bindings to ZeroMQ, see
