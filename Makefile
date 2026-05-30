@@ -16,7 +16,7 @@ CFLAGS  = $(RELEASE)
 FFLAGS  = $(RELEASE)
 ARFLAGS = rcs
 LDFLAGS = -L$(PREFIX)/lib
-LIBCZMQ = -lczmq -lzmq
+LIBCZMQ = -lczmq
 LIBZMQ  = -lzmq
 INCDIR  = $(PREFIX)/include/libfortran-zeromq
 LIBDIR  = $(PREFIX)/lib
@@ -144,16 +144,16 @@ rrworker: $(LIBFZMQ) examples/rrworker.f90
 	$(FC) $(FFLAGS) $(LDFLAGS) -o rrworker examples/rrworker.f90 $(LIBFZMQ) $(LIBZMQ)
 
 zmsg_client: $(TARGET) examples/zmsg_client.f90
-	$(FC) $(FFLAGS) $(LDFLAGS) -o zmsg_client examples/zmsg_client.f90 $(TARGET) $(LIBCZMQ)
+	$(FC) $(FFLAGS) $(LDFLAGS) -o zmsg_client examples/zmsg_client.f90 $(TARGET) $(LIBZMQ) $(LIBCZMQ)
 
 zmsg_server: $(TARGET) examples/zmsg_server.f90
-	$(FC) $(FFLAGS) $(LDFLAGS) -o zmsg_server examples/zmsg_server.f90 $(TARGET) $(LIBCZMQ)
+	$(FC) $(FFLAGS) $(LDFLAGS) -o zmsg_server examples/zmsg_server.f90 $(TARGET) $(LIBZMQ) $(LIBCZMQ)
 
 zsock_client: $(TARGET) examples/zsock_client.f90
-	$(FC) $(FFLAGS) $(LDFLAGS) -o zsock_client examples/zsock_client.f90 $(TARGET) $(LIBCZMQ)
+	$(FC) $(FFLAGS) $(LDFLAGS) -o zsock_client examples/zsock_client.f90 $(TARGET) $(LIBZMQ) $(LIBCZMQ)
 
 zsock_server: $(TARGET) examples/zsock_server.f90
-	$(FC) $(FFLAGS) $(LDFLAGS) -o zsock_server examples/zsock_server.f90 $(TARGET) $(LIBCZMQ)
+	$(FC) $(FFLAGS) $(LDFLAGS) -o zsock_server examples/zsock_server.f90 $(TARGET) $(LIBZMQ) $(LIBCZMQ)
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Documentation
