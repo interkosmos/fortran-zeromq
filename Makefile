@@ -46,8 +46,8 @@ OBJ_CZMQ = czmq.o \
            czmq_zstr.o \
            zmq_util.o
 
-SRC = $(SRC_ZMQ) $(SRC_CZMQ) src/zeromq.f90
-OBJ = $(OBJ_ZMQ) $(OBJ_CZMQ) zeromq.o
+SRC = $(SRC_CZMQ) src/zmq.F90 src/zeromq.f90
+OBJ = $(OBJ_CZMQ) zmq.o zeromq.o
 
 EXAMPLES = mspoller \
            pair \
