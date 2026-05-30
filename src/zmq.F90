@@ -356,8 +356,6 @@ module zmq
     public :: zmq_close_
     public :: zmq_connect
     public :: zmq_connect_
-    public :: zmq_connect_peer
-    public :: zmq_connect_peer_
     public :: zmq_ctx_destroy
     public :: zmq_ctx_get
     public :: zmq_ctx_new
@@ -413,8 +411,6 @@ module zmq
     public :: zmq_socket_monitor
     public :: zmq_socket_monitor_
     public :: zmq_socket_monitor_pipes_stats
-    public :: zmq_socket_monitor_versioned
-    public :: zmq_socket_monitor_versioned_
     public :: zmq_stopwatch_intermediate
     public :: zmq_stopwatch_start
     public :: zmq_stopwatch_stop
@@ -440,6 +436,8 @@ module zmq
     public :: zmq_z85_encode_
 
 #if HAS_DRAFT
+    public :: zmq_connect_peer
+    public :: zmq_connect_peer_
     public :: zmq_ctx_get_ext
     public :: zmq_ctx_set_ext
     public :: zmq_join
@@ -451,6 +449,8 @@ module zmq
     public :: zmq_msg_set_group
     public :: zmq_msg_set_group_
     public :: zmq_msg_set_routing_id
+    public :: zmq_socket_monitor_versioned
+    public :: zmq_socket_monitor_versioned_
 #endif
 
 #if HAS_POLLER
@@ -540,15 +540,6 @@ module zmq
             character(c_char), intent(in)        :: addr
             integer(c_int)                       :: zmq_connect_
         end function zmq_connect_
-
-        ! uint32_t zmq_connect_peer(void *s, const char *addr)
-        function zmq_connect_peer_(s, addr) bind(c, name='zmq_connect_peer')
-            import :: c_char, c_ptr, c_uint32_t
-            implicit none
-            type(c_ptr),       intent(in), value :: s
-            character(c_char), intent(in)        :: addr
-            integer(c_uint32_t)                  :: zmq_connect_peer_
-        end function zmq_connect_peer_
 
         ! int zmq_ctx_destroy(void *context)
         function zmq_ctx_destroy(context) bind(c, name='zmq_ctx_destroy')
@@ -988,18 +979,6 @@ module zmq
             integer(c_int)                 :: zmq_socket_monitor_pipes_stats
         end function zmq_socket_monitor_pipes_stats
 
-        ! int zmq_socket_monitor_versioned(void *s, const char *addr, uint64_t events, int event_version, int type)
-        function zmq_socket_monitor_versioned_(s, addr, events, event_version, type) bind(c, name='zmq_socket_monitor_versioned')
-            import :: c_char, c_int, c_ptr, c_uint64_t
-            implicit none
-            type(c_ptr),         intent(in), value :: s
-            character(c_char),   intent(in)        :: addr
-            integer(c_uint64_t), intent(in), value :: events
-            integer(c_int),      intent(in), value :: event_version
-            integer(c_int),      intent(in), value :: type
-            integer(c_int)                         :: zmq_socket_monitor_versioned_
-        end function zmq_socket_monitor_versioned_
-
         ! unsigned long zmq_stopwatch_intermediate(void *watch)
         function zmq_stopwatch_intermediate(watch) bind(c, name='zmq_stopwatch_intermediate')
             import :: c_ptr, c_unsigned_long
@@ -1165,6 +1144,15 @@ module zmq
 
 #if HAS_DRAFT
     interface
+        ! uint32_t zmq_connect_peer(void *s, const char *addr)
+        function zmq_connect_peer_(s, addr) bind(c, name='zmq_connect_peer')
+            import :: c_char, c_ptr, c_uint32_t
+            implicit none
+            type(c_ptr),       intent(in), value :: s
+            character(c_char), intent(in)        :: addr
+            integer(c_uint32_t)                  :: zmq_connect_peer_
+        end function zmq_connect_peer_
+
         ! int zmq_ctx_get_ext(void *context, int option, void *optval, size_t *optval_len)
         function zmq_ctx_get_ext(context, option, optval, optval_len) bind(c, name='zmq_ctx_get_ext')
             import :: c_int, c_ptr, c_size_t
@@ -1230,6 +1218,18 @@ module zmq
             integer(c_uint32_t), intent(in), value :: routing_id
             integer(c_int)                         :: zmq_msg_set_routing_id
         end function zmq_msg_set_routing_id
+
+        ! int zmq_socket_monitor_versioned(void *s, const char *addr, uint64_t events, int event_version, int type)
+        function zmq_socket_monitor_versioned_(s, addr, events, event_version, type) bind(c, name='zmq_socket_monitor_versioned')
+            import :: c_char, c_int, c_ptr, c_uint64_t
+            implicit none
+            type(c_ptr),         intent(in), value :: s
+            character(c_char),   intent(in)        :: addr
+            integer(c_uint64_t), intent(in), value :: events
+            integer(c_int),      intent(in), value :: event_version
+            integer(c_int),      intent(in), value :: type
+            integer(c_int)                         :: zmq_socket_monitor_versioned_
+        end function zmq_socket_monitor_versioned_
     end interface
 #endif
 
@@ -1374,14 +1374,6 @@ contains
         rc = zmq_connect_(s, f_c_str(addr))
     end function zmq_connect
 
-    ! uint32_t zmq_connect_peer(void *s, const char *addr)
-    integer(c_uint32_t) function zmq_connect_peer(s, addr) result(id)
-        type(c_ptr),  intent(in) :: s
-        character(*), intent(in) :: addr
-
-        id = zmq_connect_peer_(s, f_c_str(addr))
-    end function zmq_connect_peer
-
     ! int zmq_curve_keypair(char *z85_public_key, char *z85_secret_key)
     integer function zmq_curve_keypair(z85_public_key, z85_secret_key) result(rc)
         character(*), intent(in) :: z85_public_key
@@ -1467,17 +1459,6 @@ contains
         rc = zmq_socket_monitor_(s, f_c_str(addr), events)
     end function zmq_socket_monitor
 
-    ! int zmq_socket_monitor_versioned(void *s, const char *addr, uint64_t events, int event_version, int type)
-    integer function zmq_socket_monitor_versioned(s, addr, events, event_version, type) result(rc)
-        type(c_ptr),         intent(in) :: s
-        character(*),        intent(in) :: addr
-        integer(c_uint64_t), intent(in) :: events
-        integer,             intent(in) :: event_version
-        integer,             intent(in) :: type
-
-        rc = zmq_socket_monitor_versioned_(s, f_c_str(addr), events, event_version, type)
-    end function zmq_socket_monitor_versioned
-
     ! const char *zmq_strerror(int errnum)
     function zmq_strerror(errnum) result(str)
         integer, intent(in)       :: errnum
@@ -1530,6 +1511,14 @@ contains
     end subroutine zmq_z85_encode
 
 #if HAS_DRAFT
+    ! uint32_t zmq_connect_peer(void *s, const char *addr)
+    integer(c_uint32_t) function zmq_connect_peer(s, addr) result(id)
+        type(c_ptr),  intent(in) :: s
+        character(*), intent(in) :: addr
+
+        id = zmq_connect_peer_(s, f_c_str(addr))
+    end function zmq_connect_peer
+
     ! int zmq_join(void *s, const char *group)
     integer function zmq_join(s, group) result(rc)
         type(c_ptr),  intent(in) :: s
@@ -1564,5 +1553,16 @@ contains
 
         rc = zmq_msg_set_group_(msg, f_c_str(group))
     end function zmq_msg_set_group
+
+    ! int zmq_socket_monitor_versioned(void *s, const char *addr, uint64_t events, int event_version, int type)
+    integer function zmq_socket_monitor_versioned(s, addr, events, event_version, type) result(rc)
+        type(c_ptr),         intent(in) :: s
+        character(*),        intent(in) :: addr
+        integer(c_uint64_t), intent(in) :: events
+        integer,             intent(in) :: event_version
+        integer,             intent(in) :: type
+
+        rc = zmq_socket_monitor_versioned_(s, f_c_str(addr), events, event_version, type)
+    end function zmq_socket_monitor_versioned
 #endif
 end module zmq
