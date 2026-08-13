@@ -1029,9 +1029,9 @@ module zmq
         function zmq_threadstart(func, arg) bind(c, name='zmq_threadstart')
             import :: c_ptr, zmq_thread_fn
             implicit none
-            procedure(zmq_thread_fn)       :: func
-            type(c_ptr), intent(in), value :: arg
-            type(c_ptr)                    :: zmq_threadstart
+            procedure(zmq_thread_fn), bind(c) :: func
+            type(c_ptr), intent(in), value    :: arg
+            type(c_ptr)                       :: zmq_threadstart
         end function zmq_threadstart
 
         ! int zmq_timers_add(void *timers, size_t interval, zmq_timer_fn *handler, void *arg)
@@ -1040,7 +1040,7 @@ module zmq
             implicit none
             type(c_ptr),       intent(in), value :: timers
             integer(c_size_t), intent(in), value :: interval
-            procedure(zmq_timer_fn)              :: handler
+            procedure(zmq_timer_fn), bind(c)     :: handler
             type(c_ptr),       intent(in), value :: arg
             integer(c_int)                       :: zmq_timers_add
         end function zmq_timers_add
@@ -1423,7 +1423,7 @@ contains
         type(zmq_msg_t),   intent(inout)           :: msg
         type(*), target,   intent(inout)           :: data
         integer(c_size_t), intent(in)              :: size
-        procedure(zmq_free_fn),           optional :: ffn
+        procedure(zmq_free_fn), bind(c),  optional :: ffn
         type(*), target,   intent(inout), optional :: hint
 
         type(c_funptr) :: ffn_
